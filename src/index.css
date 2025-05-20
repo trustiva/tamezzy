@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900;
+  }
+}
+
+@layer components {
+  .gradient-bg {
+    @apply bg-gradient-to-r from-primary-from to-primary-to;
+  }
+  
+  .btn-primary {
+    @apply gradient-bg text-white px-6 py-2 rounded-lg font-medium 
+           hover:opacity-90 transition-opacity duration-200;
+  }
+  
+  .card {
+    @apply bg-white rounded-xl shadow-sm p-6;
+  }
+} 
