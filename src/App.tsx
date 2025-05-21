@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast'
 import HomePage from './pages/HomePage'
 import ResultsPage from './pages/ResultsPage'
 import SplashScreen from './pages/SplashScreen'
+import BeforeAfterPage from './pages/BeforeAfterPage'
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/" element={<SplashScreen />} />
         <Route path="/home" element={<HomePage />} />
         <Route path="/results" element={<ResultsPage />} />
+        <Route path="/before-after" element={<BeforeAfterPage />} />
       </Routes>
     </Router>
   )
