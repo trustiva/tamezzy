@@ -1,48 +1,48 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-
-const cleaningItems = [
-  "جوراب‌های ریخته کنار تخت",
-  "بطری‌های خالی روی میز",
-  "لباس‌ها روی صندلی",
-  "دستمال کاغذی زیر فرش",
-  "خوراکی‌های نیمه‌خورده",
-  "لیوان چایی خشک‌شده روی کتاب",
-  "کوله‌پشتی باز کنار کمد",
-  "نایلون‌های پاره روی زمین",
-  "کاغذ یادداشت پراکنده",
-  "پوشک بچه؟! (نه واقعاً 😳)"
-];
+import { CleaningItem, simulateAiResponse } from "../utils/simulateAiResponse";
 
 export default function ResultsPage() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const image = location.state?.image as File | undefined;
+
+  const [items, setItems] = useState<CleaningItem[]>([]);
   const [visibleCount, setVisibleCount] = useState(5);
   const [completed, setCompleted] = useState<string[]>([]);
   const [imageUrl, setImageUrl] = useState<string>("");
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const storedImage = localStorage.getItem("uploadedImage");
-    if (!storedImage) {
+    if (!image) {
       navigate("/home");
       return;
     }
-    setImageUrl(storedImage);
-  }, [navigate]);
+
+    // Create object URL for the image
+    const url = URL.createObjectURL(image);
+    setImageUrl(url);
+
+    // Get AI response
+    const response = simulateAiResponse(image);
+    setItems(response);
+
+    // Cleanup object URL on unmount
+    return () => URL.revokeObjectURL(url);
+  }, [image, navigate]);
 
   const handleComplete = (item: string) => {
     setCompleted([...completed, item]);
-    if (visibleCount < cleaningItems.length) {
+    if (visibleCount < items.length) {
       setVisibleCount(visibleCount + 1);
     }
   };
 
   const handleBack = () => {
-    localStorage.removeItem("uploadedImage");
     navigate("/home");
   };
 
-  if (!imageUrl) return null;
+  if (!imageUrl || items.length === 0) return null;
 
   return (
     <div className="min-h-screen bg-white px-4 py-8 text-right font-vazir">
@@ -67,7 +67,7 @@ export default function ResultsPage() {
 
           <div>
             <h1 className="text-2xl font-bold text-pink-600 mb-4">
-              لیست تمیزکاری هوشمند تمیزی 🤖
+              تحلیل تمیزی 🤖
             </h1>
             <p className="text-gray-600 text-sm">
               روی هر مورد کلیک کن تا تیک بخوره و مورد بعدی ظاهر بشه
@@ -76,27 +76,30 @@ export default function ResultsPage() {
         </div>
 
         <div className="space-y-4">
-          {cleaningItems.slice(0, visibleCount).map((item, index) => (
+          {items.slice(0, visibleCount).map((item, index) => (
             <div
               key={index}
               className={`p-4 border rounded-xl shadow-md cursor-pointer transition-all duration-300 transform hover:scale-102 ${
-                completed.includes(item)
+                completed.includes(item.name)
                   ? "bg-green-100 text-green-700 line-through"
                   : "bg-white hover:bg-gray-50"
               }`}
-              onClick={() => handleComplete(item)}
+              onClick={() => handleComplete(item.name)}
             >
               <div className="flex items-center justify-between">
-                <span>{item}</span>
-                {completed.includes(item) && (
-                  <span className="text-green-500">✓</span>
+                <div>
+                  <div className="font-bold">{item.name}</div>
+                  <div className="text-sm text-gray-500 mt-1">{item.tip}</div>
+                </div>
+                {completed.includes(item.name) && (
+                  <span className="text-green-500 text-xl">✓</span>
                 )}
               </div>
             </div>
           ))}
         </div>
 
-        {completed.length === cleaningItems.length && (
+        {completed.length === items.length && (
           <div className="mt-10 text-center text-gray-600 text-lg animate-fade-in">
             🎉 کارت تموم شد!
             <br />

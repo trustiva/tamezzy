@@ -19,14 +19,7 @@ export default function HomePage() {
 
   const handleAnalyze = () => {
     if (image) {
-      // Convert image to base64 and store in localStorage
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const imageUrl = e.target?.result as string;
-        localStorage.setItem('uploadedImage', imageUrl);
-        navigate("/results");
-      };
-      reader.readAsDataURL(image);
+      navigate("/results", { state: { image } });
     } else {
       toast.error('اول یه عکس از اتاقت بده 😅');
     }
