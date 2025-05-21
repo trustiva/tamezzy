@@ -2,13 +2,11 @@ import React, { useCallback, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { ArrowUpTrayIcon } from '@heroicons/react/24/outline'
 import toast from 'react-hot-toast'
+import { useNavigate } from 'react-router-dom'
 
-interface HomeProps {
-  onImageUpload: (imageUrl: string) => void
-}
-
-export default function Home({ onImageUpload }: HomeProps) {
+export default function Home() {
   const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate()
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0]
@@ -24,7 +22,9 @@ export default function Home({ onImageUpload }: HomeProps) {
       const reader = new FileReader()
       reader.onload = (e) => {
         const imageUrl = e.target?.result as string
-        onImageUpload(imageUrl)
+        // Store the image URL in localStorage for the Results page
+        localStorage.setItem('uploadedImage', imageUrl)
+        navigate('/results')
       }
       reader.readAsDataURL(file)
     } catch (error) {
@@ -32,7 +32,7 @@ export default function Home({ onImageUpload }: HomeProps) {
     } finally {
       setIsLoading(false)
     }
-  }, [onImageUpload])
+  }, [navigate])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,

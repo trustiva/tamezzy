@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { ArrowLeftIcon } from '@heroicons/react/24/outline'
+import { useNavigate } from 'react-router-dom'
 
 interface MessyItem {
   name: string
@@ -8,38 +9,52 @@ interface MessyItem {
   tip: string
 }
 
-interface ResultsProps {
-  imageUrl: string
-  onBack: () => void
-}
+export default function Results() {
+  const navigate = useNavigate()
+  const [imageUrl, setImageUrl] = useState<string>('')
 
-// Mock data for demonstration
-const mockItems: MessyItem[] = [
-  {
-    name: 'لباس‌های روی زمین',
-    location: 'کنار تخت',
-    priority: 1,
-    tip: 'یک سبد لباس‌چرک کنار تخت بذار تا اینطوری نشه'
-  },
-  {
-    name: 'بطری‌های خالی آب',
-    location: 'روی میز',
-    priority: 2,
-    tip: 'یک سطل زباله زیر میز بذار'
-  },
-  {
-    name: 'کتاب‌های پراکنده',
-    location: 'اطراف اتاق',
-    priority: 3,
-    tip: 'یک قفسه مخصوص کتاب‌ها در نظر بگیر'
+  useEffect(() => {
+    const storedImage = localStorage.getItem('uploadedImage')
+    if (!storedImage) {
+      navigate('/home')
+      return
+    }
+    setImageUrl(storedImage)
+  }, [navigate])
+
+  const handleBack = () => {
+    localStorage.removeItem('uploadedImage')
+    navigate('/home')
   }
-]
 
-export default function Results({ imageUrl, onBack }: ResultsProps) {
+  // Mock data for demonstration
+  const mockItems: MessyItem[] = [
+    {
+      name: 'لباس‌های روی زمین',
+      location: 'کنار تخت',
+      priority: 1,
+      tip: 'یک سبد لباس‌چرک کنار تخت بذار تا اینطوری نشه'
+    },
+    {
+      name: 'بطری‌های خالی آب',
+      location: 'روی میز',
+      priority: 2,
+      tip: 'یک سطل زباله زیر میز بذار'
+    },
+    {
+      name: 'کتاب‌های پراکنده',
+      location: 'اطراف اتاق',
+      priority: 3,
+      tip: 'یک قفسه مخصوص کتاب‌ها در نظر بگیر'
+    }
+  ]
+
+  if (!imageUrl) return null
+
   return (
     <div className="max-w-4xl mx-auto">
       <button
-        onClick={onBack}
+        onClick={handleBack}
         className="flex items-center text-gray-600 hover:text-gray-900 mb-6"
       >
         <ArrowLeftIcon className="w-5 h-5 ml-2" />

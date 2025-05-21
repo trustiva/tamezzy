@@ -1,28 +1,20 @@
-import React, { useState } from 'react'
+import React from 'react'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import Home from './pages/Home'
 import Results from './pages/Results'
+import SplashScreen from './pages/SplashScreen'
 
 function App() {
-  const [uploadedImage, setUploadedImage] = useState<string | null>(null)
-  const [showResults, setShowResults] = useState(false)
-
-  const handleImageUpload = (imageUrl: string) => {
-    setUploadedImage(imageUrl)
-    setShowResults(true)
-  }
-
   return (
-    <div className="min-h-screen">
+    <Router>
       <Toaster position="top-center" />
-      <main className="container mx-auto px-4 py-8">
-        {!showResults ? (
-          <Home onImageUpload={handleImageUpload} />
-        ) : (
-          <Results imageUrl={uploadedImage!} onBack={() => setShowResults(false)} />
-        )}
-      </main>
-    </div>
+      <Routes>
+        <Route path="/" element={<SplashScreen />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/results" element={<Results />} />
+      </Routes>
+    </Router>
   )
 }
 
